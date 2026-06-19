@@ -15,6 +15,7 @@ ARG ALPINE_VERSION=3.23
 ARG ALPINE_S6_VERSION=${ALPINE_VERSION}-2.2.0.3
 
 FROM --platform=${BUILDPLATFORM} alpine:${ALPINE_VERSION} AS src
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 RUN apk --update --no-cache add curl git tar tree sed xz
 WORKDIR /src
 
@@ -78,6 +79,7 @@ RUN sed -i '1i #include <sys/time.h>' src/scrapec.c
 RUN rm -rf .git*
 
 FROM crazymax/alpine-s6:${ALPINE_S6_VERSION} AS builder
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 RUN apk --update --no-cache add \
     autoconf \
     automake \
@@ -159,6 +161,7 @@ RUN cp build/dumptorrent build/scrapec ${DIST_PATH}/usr/local/bin
 RUN tree ${DIST_PATH}
 
 FROM crazymax/alpine-s6:${ALPINE_S6_VERSION}
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 COPY --from=builder /dist /
 COPY --from=src-rutorrent --chown=nobody:nogroup /src /var/www/rutorrent
 COPY --from=src-geoip2-rutorrent --chown=nobody:nogroup /src /var/www/rutorrent/plugins/geoip2
@@ -178,8 +181,8 @@ RUN echo "net.core.rmem_max = 67108864" >> /etc/sysctl.conf \
 
 # unrar package is not available since alpine 3.15
 # dhclient package is not available since alpine 3.21
-RUN echo "@314 http://dl-cdn.alpinelinux.org/alpine/v3.14/main" >> /etc/apk/repositories \
-  && echo "@320 http://dl-cdn.alpinelinux.org/alpine/v3.20/main" >> /etc/apk/repositories \
+RUN echo "@314 https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.14/main" >> /etc/apk/repositories \
+  && echo "@320 https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/main" >> /etc/apk/repositories \
   && apk --update --no-cache add unrar@314 dhclient@320
 
 RUN apk --update --no-cache add \
