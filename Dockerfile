@@ -3,8 +3,8 @@
 ARG CARES_VERSION=1.34.6
 ARG CURL_VERSION=8.20.0
 
-ARG LIBTORRENT_VERSION=v0.16.13
-ARG RTORRENT_VERSION=v0.16.13
+ARG LIBTORRENT_VERSION=v0.13.8
+ARG RTORRENT_VERSION=v0.9.8
 
 ARG MKTORRENT_VERSION=v1.1
 
@@ -98,6 +98,7 @@ RUN apk --update --no-cache add \
     pcre-dev \
     php84-dev \
     php84-pear \
+    xmlrpc-c-dev \
     tar \
     tree \
     xz \
@@ -133,7 +134,7 @@ RUN tree ${DIST_PATH}
 WORKDIR /usr/local/src/rtorrent
 COPY --from=src-rtorrent /src .
 RUN autoreconf -vfi
-RUN ./configure --with-xmlrpc-tinyxml2 --with-ncurses
+RUN ./configure --with-xmlrpc-c --with-ncurses
 RUN make -j$(nproc) CXXFLAGS="-w -O3 -flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 RUN make install -j$(nproc)
 RUN make DESTDIR=${DIST_PATH} install -j$(nproc)
@@ -195,6 +196,7 @@ RUN apk --update --no-cache add \
     gzip \
     libsigc++3 \
     libstdc++ \
+    xmlrpc-c \
     mediainfo \
     ncurses \
     nginx \
