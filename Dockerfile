@@ -67,9 +67,6 @@ FROM src AS src-geoip2-rutorrent
 COPY geoip2-rutorrent /src
 COPY --from=vendor-geoip2-rutorrent /app/vendor /src/vendor
 
-FROM src AS src-mmdb
-RUN curl -SsOL "https://github.com/crazy-max/geoip-updater/raw/mmdb/GeoLite2-City.mmdb" \
-  && curl -SsOL "https://github.com/crazy-max/geoip-updater/raw/mmdb/GeoLite2-Country.mmdb"
 
 FROM src AS src-dumptorrent
 RUN git init . && git remote add origin "https://github.com/tomcdj71/dumptorrent.git"
@@ -165,7 +162,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/re
 COPY --from=builder /dist /
 COPY --from=src-rutorrent --chown=nobody:nogroup /src /var/www/rutorrent
 COPY --from=src-geoip2-rutorrent --chown=nobody:nogroup /src /var/www/rutorrent/plugins/geoip2
-COPY --from=src-mmdb /src /var/mmdb
+COPY mmdb/*.mmdb /var/mmdb/
 
 ENV PYTHONPATH="/var/www/rutorrent" \
   S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
