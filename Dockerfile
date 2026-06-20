@@ -43,7 +43,7 @@ ARG MKTORRENT_VERSION
 RUN git fetch origin "${MKTORRENT_VERSION}" && git checkout -q FETCH_HEAD
 
 FROM src AS src-rutorrent
-RUN git init . && git remote add origin "httphttps://docker.kangke.top:45967/https://github.com/Novik/ruTorrent.git"
+RUN git init . && git remote add origin "https://docker.kangke.top:45967/https://github.com/Novik/ruTorrent.git"
 ARG RUTORRENT_VERSION
 RUN git fetch origin "${RUTORRENT_VERSION}" && git checkout -q FETCH_HEAD
 RUN rm -rf .git* conf/users plugins/geoip share
@@ -69,7 +69,7 @@ COPY --from=vendor-geoip2-rutorrent /app/vendor /src/vendor
 
 
 FROM src AS src-dumptorrent
-RUN git init . && git remote add origin "https://github.com/tomcdj71/dumptorrent.git"
+RUN git init . && git remote add origin "https://docker.kangke.top:45967/https://github.com/tomcdj71/dumptorrent.git"
 ARG DUMPTORRENT_VERSION
 RUN git fetch origin "${DUMPTORRENT_VERSION}" && git checkout -q FETCH_HEAD
 RUN sed -i '1i #include <sys/time.h>' src/scrapec.c
