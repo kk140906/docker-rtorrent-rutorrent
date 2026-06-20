@@ -386,6 +386,27 @@ for theme in ${themes}; do
   chown -R nobody:nogroup "/var/www/rutorrent/plugins/theme/themes/${theme}"
 done
 
+echo "Patching RSS plugin to strip inline event handlers from feed content..."
+if [ -f /var/www/rutorrent/plugins/rss/init.js ]; then
+  python3 -c "
+import re
+path = '/var/www/rutorrent/plugins/rss/init.js'
+with open(path, 'r') as f:
+    content = f.read()
+old = 'const rawHTML = String(data);'
+# Strip <img> tags that contain onload attributes from RSS feed content
+# to prevent Scale/Preview undefined errors from PTerClub and similar trackers
+new_line = 'const rawHTML = String(data).replace(/<img[^>]+onload=[^>]+>/gi, \"\");'
+if old in content:
+    content = content.replace(old, new_line, 1)
+    with open(path, 'w') as f:
+        f.write(content)
+    print('  Patched getrssdetailsResponse to strip onload attributes')
+else:
+    print('  Already patched or pattern not found')
+"
+fi
+
 echo "Setting GeoIP2 databases for geoip2 plugin..."
 if [ -d "/var/www/rutorrent/plugins/geoip2" ]; then
   if [ ! "$(ls -A /data/geoip)" ]; then
