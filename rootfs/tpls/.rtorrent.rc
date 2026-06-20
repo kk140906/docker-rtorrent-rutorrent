@@ -51,7 +51,9 @@ schedule2 = untied_directory, 5, 5, (cat,"stop_untied=",(cfg.watch),"*.torrent")
 # Close torrents when diskspace is low
 schedule2 = monitor_diskspace, 15, 60, ((close_low_diskspace,1000M))
 
-# Move finished (without Autotools/Automove plugin on ruTorrent)
-method.insert = d.get_finished_dir, simple, "cat=$cfg.download_complete=,$d.custom1="
-method.insert = d.move_to_complete, simple, "d.directory.set=$argument.1=; execute=mkdir,-p,$argument.1=; execute=mv,-u,$argument.0=,$argument.1=; d.save_full_session="
-method.set_key = event.download.finished,move_complete,"d.move_to_complete=$d.data_path=,$d.get_finished_dir="
+# Move finished — disabled: using ruTorrent Autotools plugin instead
+# The handler below uses d.custom1 which stores labels in URL-encoded form,
+# causing non-ASCII tags (e.g. CJK) to produce garbled directory names.
+#method.insert = d.get_finished_dir, simple, "cat=$cfg.download_complete=,$d.custom1="
+#method.insert = d.move_to_complete, simple, "d.directory.set=$argument.1=; execute=mkdir,-p,$argument.1=; execute=mv,-u,$argument.0=,$argument.1=; d.save_full_session="
+#method.set_key = event.download.finished,move_complete,"d.move_to_complete=$d.data_path=,$d.get_finished_dir="
